@@ -17,9 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from core.views import ChatView
+from core.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', ChatView.as_view())
+    path('chat/<int:room_id>', ChatView.as_view()),
+    path('', RoomListView.as_view())
 ]
