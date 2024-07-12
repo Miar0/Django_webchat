@@ -1,8 +1,7 @@
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-from django.contrib.auth import get_user_model
-
+from core.models import SocialUser
 from core.models import Message
 
 
@@ -19,7 +18,7 @@ class ChatConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None, bytes_data=None):
         text_data = json.loads(text_data)
-        user = get_user_model().objects.get(id=text_data['userId']).username
+        user = SocialUser.objects.get(id=text_data['userId']).username
         if text_data['type'] == 'connected':
             async_to_sync(self.channel_layer.group_send)(
                 self.group_name, {
@@ -40,7 +39,8 @@ class ChatConsumer(WebsocketConsumer):
                     'type': 'chat_message',
                     'message': json.dumps({
                         'text': text_data['text'],
-                        'username': user
+                        'username': user,
+                        'userId': text_data['userId']
                     })
                 }
             )

@@ -1,0 +1,18 @@
+.message {
+    display: flex;
+    flex-direction: column-reverse;
+    max-height: 766px;
+}
+
+.message p {
+    background: lightskyblue;
+    padding: 10px;
+    align-self: start;
+    border-radius: 10px;
+}
+
+.own {
+    align-self: end !important;
+    background: blue !important;
+    color: white;
+}

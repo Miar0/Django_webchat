@@ -14,13 +14,21 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
 from core.views import *
+from django_webchat import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('chat/<int:room_id>', ChatView.as_view()),
-    path('', RoomListView.as_view())
+    # path('chat/<int:room_id>', ChatView.as_view()),
+    path('rooms/<int:room_id>', ChatDataView.as_view(), name='chat_data'),
+    path('rooms/', RoomListView.as_view(), name='rooms')
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

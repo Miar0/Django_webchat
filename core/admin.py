@@ -4,3 +4,4 @@ from core.models import *
 # Register your models here.
 admin.site.register(Message)
 admin.site.register(Room)
+admin.site.register(SocialUser)
