@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
 from core.views import *
@@ -24,6 +25,9 @@ from django_webchat import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('chat/<int:room_id>', ChatView.as_view()),
+    path('registration/', RegistrationView.as_view()),
+    path('login/', LoginView.as_view(template_name='login.html')),
+    path('logout/', LogoutView.as_view()),
     path('rooms/<int:room_id>', ChatDataView.as_view(), name='chat_data'),
     path('rooms/', RoomListView.as_view(), name='rooms')
 ]

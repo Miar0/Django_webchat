@@ -8,8 +8,14 @@ Rooms
 {% block content %}
 <div id="room_list" class="row h-100">
     <ul class="p-0 m-0 col-2 border border-black rounded-start-4">
-        <h2 class="w-100 d-flex justify-content-center mb-0 border-bottom border-black align-items-center"
-            style="height: 60px">Users</h2>
+        <div class="w-100 d-flex justify-content-around mb-0 border-bottom border-black align-items-center"
+             style="height: 60px">
+            <h2>Users</h2>
+            <a class="nav-link" href="/logout">
+                <img class="me-1" height="20px" width="20px" src="{% static 'icons/Logout.png' %}">
+                Logout
+            </a>
+        </div>
         <div class="overflow-auto" style="max-height: 825px">
             {% for room, other_user in rooms_with_users %}
             <a style="height: 55px" href="#" data-room-id="{{ room.id }}"

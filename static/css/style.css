@@ -1,6 +1,6 @@
 .message {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     max-height: 766px;
 }
 

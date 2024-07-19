@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import *
 
+from core.forms import RegistrationForm
 from core.models import *
 
 
@@ -105,3 +106,13 @@ class ListFriendView(LoginRequiredMixin, ListView):
             to_user__from_user=self.request.user, from_user__accepted=True
         )
         return friends
+
+
+class RegistrationView(FormView):
+    template_name = 'registration.html'
+    form_class = RegistrationForm
+    success_url = '/login/'
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
