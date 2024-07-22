@@ -17,6 +17,16 @@ from core.models import *
 #         return context
 #
 
+class RegistrationView(FormView):
+    template_name = 'registration.html'
+    form_class = RegistrationForm
+    success_url = '/login/'
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+
 class ChatDataView(LoginRequiredMixin, View):
     def get(self, request, room_id):
         room = get_object_or_404(Room, id=room_id)
@@ -59,10 +69,10 @@ class SendRequestsView(LoginRequiredMixin, View):
         to_user = get_object_or_404(SocialUser, id=to_user_id)
         from_user = request.user
 
-        if not FriendRequests.objects.filter(from_user=from_user, to_user=to_user).exests():
+        if not FriendRequests.objects.filter(from_user=from_user, to_user=to_user).exists():
             FriendRequests.objects.create(from_user=from_user, to_user=to_user)
 
-        return redirect('rooms')
+        return redirect('user_list')
 
 
 class AcceptFriendView(LoginRequiredMixin, View):
@@ -72,7 +82,7 @@ class AcceptFriendView(LoginRequiredMixin, View):
 
         if friend_request:
             friend_request.accept()
-        return redirect('rooms')
+        return redirect('friend_requests')
 
 
 class RejectFriendView(LoginRequiredMixin, View):
@@ -82,7 +92,7 @@ class RejectFriendView(LoginRequiredMixin, View):
 
         if friend_request:
             friend_request.delete()
-        return redirect('rooms')
+        return redirect('friend_requests')
 
 
 class FriendRequestView(LoginRequiredMixin, ListView):
@@ -103,16 +113,30 @@ class ListFriendView(LoginRequiredMixin, ListView):
         friends = SocialUser.objects.filter(
             from_user__to_user=self.request.user, from_user__accepted=True
         ) | SocialUser.objects.filter(
-            to_user__from_user=self.request.user, from_user__accepted=True
+            to_user__from_user=self.request.user, to_user__accepted=True
         )
         return friends
 
 
-class RegistrationView(FormView):
-    template_name = 'registration.html'
-    form_class = RegistrationForm
-    success_url = '/login/'
+class UserListView(LoginRequiredMixin, ListView):
+    model = SocialUser
+    template_name = 'users.html'
+    context_object_name = 'users'
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
+    def get_queryset(self):
+        current_user = self.request.user
+        friends = SocialUser.objects.filter(
+            from_user__to_user=self.request.user, from_user__accepted=True
+        ) | SocialUser.objects.filter(
+            to_user__from_user=self.request.user, to_user__accepted=True
+        )
+
+        friend_ids = [friend.id for friend in friends]
+        return SocialUser.objects.exclude(id=current_user.id).exclude(id__in=friend_ids)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_user = self.request.user
+        friend_request_sent = FriendRequests.objects.filter(from_user=current_user)
+        context['friend_request_sent'] = [req.to_user.id for req in friend_request_sent]
+        return context

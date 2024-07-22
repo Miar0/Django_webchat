@@ -5,3 +5,4 @@ from core.models import *
 admin.site.register(Message)
 admin.site.register(Room)
 admin.site.register(SocialUser)
+admin.site.register(FriendRequests)

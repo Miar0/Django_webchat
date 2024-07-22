@@ -14,6 +14,15 @@
 </head>
 <body>
 <div class="container py-3 vh-100">
+    <header class="d-flex justify-content-center py-3">
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a href="{% url 'user_list' %}" class="nav-link">User list</a></li>
+            <li class="nav-item"><a href="{% url 'rooms' %}" class="nav-link">Rooms</a></li>
+            <li class="nav-item"><a href="{% url 'friend_requests' %}" class="nav-link">Friend requests</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">FAQs</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+        </ul>
+    </header>
     {% block content %} {% endblock %}
 </div>
 

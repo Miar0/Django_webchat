@@ -29,7 +29,12 @@ urlpatterns = [
     path('login/', LoginView.as_view(template_name='login.html')),
     path('logout/', LogoutView.as_view()),
     path('rooms/<int:room_id>', ChatDataView.as_view(), name='chat_data'),
-    path('rooms/', RoomListView.as_view(), name='rooms')
+    path('rooms/', RoomListView.as_view(), name='rooms'),
+    path('sent-friend-request/', SendRequestsView.as_view(), name='sent_friend_request'),
+    path('users/', UserListView.as_view(), name='user_list'),
+    path('friend-requests/', FriendRequestView.as_view(), name='friend_requests'),
+    path('accept-friend-request/<int:pk>', AcceptFriendView.as_view(), name='accept_friend_request'),
+    path('reject-friend-request/<int:pk>', RejectFriendView.as_view(), name='reject_friend_request')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

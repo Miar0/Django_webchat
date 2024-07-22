@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    All users
+{% endblock %}
+
+{% block content %}
+    <h2>All users</h2>
+    <ul class="list-group">
+        {% for user in users %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <img src="{{ user.avatar.url }}" class="rounded-circle me-2" width="50">
+                    <b>{{ user.username }}</b>
+                </div>
+                <div>
+                    {% if user.id in friend_request_sent %}
+                        <button type="button" class="btn btn-secondary" disabled>Request sent</button>
+                    {% else %}
+                    <form action="{% url 'sent_friend_request' %}" method="post">{% csrf_token %}
+                        <input type="hidden" name="to_user_id" value="{{ user.id }}">
+                        <button type="submit" class="btn btn-primary">Add friend</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
