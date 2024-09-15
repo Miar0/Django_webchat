@@ -27,12 +27,15 @@ urlpatterns = [
     # path('chat/<int:room_id>', ChatView.as_view()),
     path('registration/', RegistrationView.as_view()),
     path('login/', LoginView.as_view(template_name='login.html')),
-    path('logout/', LogoutView.as_view()),
+    path('logout/', LogoutView.as_view(), name='logout'),
     path('rooms/<int:room_id>', ChatDataView.as_view(), name='chat_data'),
     path('rooms/', RoomListView.as_view(), name='rooms'),
     path('sent-friend-request/', SendRequestsView.as_view(), name='sent_friend_request'),
     path('users/', UserListView.as_view(), name='user_list'),
+    path('friends/', ListFriendView.as_view(), name='friends'),
     path('friend-requests/', FriendRequestView.as_view(), name='friend_requests'),
+    path('cancel-friend-request/<int:pk>', CancelRequestView.as_view(), name='cancel_friend_request'),
+    path('remove-friend/<int:pk>', RemoveFriendView.as_view(), name='remove_friend'),
     path('accept-friend-request/<int:pk>', AcceptFriendView.as_view(), name='accept_friend_request'),
     path('reject-friend-request/<int:pk>', RejectFriendView.as_view(), name='reject_friend_request')
 ]

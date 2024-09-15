@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Friends
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+    <h2>Friends</h2>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+        Create group
+    </button>
+</div>
+<ul class="list-group">
+    {% for friend in friends %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <img src="{{ friend.avatar.url }}" class="rounded-circle me-2" width="50" id="avatar">
+            <b>{{ friend.username }}</b>
+        </div>
+        <div>
+            <form action="{% url 'remove_friend' friend.id %}" method="post">{% csrf_token %}
+                <button type="submit" class="btn btn-danger">Remove</button>
+            </form>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Create group</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post">{% csrf_token %}
+                    <input class="form-control" type="text" placeholder="Room name" name="room_name" required>
+                    <label for="users"></label>
+                    <select name="users" multiple id="users" class="form-control mb-2">
+                        {% for friend in friends %}
+                        <option value="{{ friend.id }}">{{ friend.username }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-success">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

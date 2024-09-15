@@ -1,3 +1,6 @@
+import os.path
+
+from PIL import Image
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -15,6 +18,21 @@ class SocialUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        img = Image.open(self.avatar.path)
+        # output_size = (50, 50)
+        # thumb = img.thumbnail(output_size)
+        output_width = 50
+        w_percent = output_width / img.size[0]
+        output_height = int(img.size[1] * w_percent)
+        img = img.resize((output_width, output_height), Image.Resampling.HAMMING)
+        thumbnail_path = os.path.join(os.path.dirname(self.avatar.path), f"thumb_{os.path.basename(self.avatar.path)}")
+        img.save(thumbnail_path)
+
+    def get_thumbnail_url(self):
+        return self.avatar.url.replace('avatars/', 'avatars/thumb_')
 
 
 class TimeIt(models.Model):

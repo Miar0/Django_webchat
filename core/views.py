@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import *
@@ -85,6 +86,30 @@ class AcceptFriendView(LoginRequiredMixin, View):
         return redirect('friend_requests')
 
 
+class CancelRequestView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        friend_request = get_object_or_404(FriendRequests, from_user=request.user, to_user=pk)
+        friend_request.delete()
+        return redirect('user_list')
+
+
+class RemoveFriendView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        other_user = SocialUser.objects.get(id=pk)
+        friend_request = get_object_or_404(
+            FriendRequests, Q(from_user=request.user, to_user=pk) | Q(to_user=request.user, from_user=pk)
+        )
+        Room.objects.filter(
+            Q(
+                name=f"{request.user.username} -> {other_user.username}"
+            ) | Q(
+                name=f"{other_user.username} -> {request.user.username}")
+        ).delete()
+
+        friend_request.delete()
+        return redirect('friends')
+
+
 class RejectFriendView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         friend_request_id = kwargs.get('pk')
@@ -131,8 +156,14 @@ class UserListView(LoginRequiredMixin, ListView):
             to_user__from_user=self.request.user, to_user__accepted=True
         )
 
-        friend_ids = [friend.id for friend in friends]
-        return SocialUser.objects.exclude(id=current_user.id).exclude(id__in=friend_ids)
+        received_requests = FriendRequests.objects.filter(to_user=current_user).values_list('from_user', flat=True)
+        excluded_users = (
+            set(received_requests)
+            .union(set(friends.values_list('id', flat=True)))
+            .union([current_user.id])
+        )
+
+        return SocialUser.objects.exclude(id__in=excluded_users)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -140,3 +171,5 @@ class UserListView(LoginRequiredMixin, ListView):
         friend_request_sent = FriendRequests.objects.filter(from_user=current_user)
         context['friend_request_sent'] = [req.to_user.id for req in friend_request_sent]
         return context
+
+
